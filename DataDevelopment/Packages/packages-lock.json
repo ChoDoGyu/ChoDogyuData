@@ -8,7 +8,7 @@
       "hash": "aeec0a4de7eb2b0878dfa8d6ded969422884b667"
     },
     "com.chodogyu.data": {
-      "version": "file:C:/Users/USER/Documents/GitHub/ChoDogyuData/com.chodogyu.data",
+      "version": "file:../../com.chodogyu.data",
       "depth": 0,
       "source": "local",
       "dependencies": {}
