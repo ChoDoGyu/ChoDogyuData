@@ -2,7 +2,8 @@
   "name": "CDG.Data.Tests.Runtime",
   "rootNamespace": "CDG.Data.Tests.Runtime",
   "references": [
-    "CDG.Data"
+    "CDG.Data",
+    "CDG.Core"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],
