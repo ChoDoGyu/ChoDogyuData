@@ -16,6 +16,7 @@ namespace CDG.Data
         [SerializeField]
         private List<T> entries = new List<T>();
 
+        private List<T> readOnlyEntriesSource;
         private ReadOnlyCollection<T> readOnlyEntries;
 
         /// <summary>
@@ -26,8 +27,21 @@ namespace CDG.Data
         /// <summary>
         /// Asset에 저장된 데이터 항목을 직렬화된 순서대로 제공합니다.
         /// 반환된 컬렉션을 통해 항목을 추가, 제거 또는 교체할 수 없습니다.
+        /// 내부 직렬화 목록이 교체된 경우에는 최신 목록을 기준으로 읽기 전용 뷰를 다시 생성합니다.
         /// </summary>
-        public IReadOnlyList<T> Entries => readOnlyEntries ??= entries.AsReadOnly();
+        public IReadOnlyList<T> Entries
+        {
+            get
+            {
+                if (!ReferenceEquals(readOnlyEntriesSource, entries))
+                {
+                    readOnlyEntriesSource = entries;
+                    readOnlyEntries = entries.AsReadOnly();
+                }
+
+                return readOnlyEntries;
+            }
+        }
 
         /// <summary>
         /// 현재 Asset에 저장된 데이터 항목 전체를 검증합니다.

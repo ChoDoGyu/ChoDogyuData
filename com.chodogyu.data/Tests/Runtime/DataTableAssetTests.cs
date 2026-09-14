@@ -169,5 +169,124 @@ namespace CDG.Data.Tests.Runtime
         private sealed class TestDataTableAsset : DataTableAsset<TestEntry>
         {
         }
+
+        [Test]
+        public void Entries_InternalListReplacedAfterFirstAccess_ReturnsLatestEntries()
+        {
+            TestDataTableAsset asset = CreateAsset();
+
+            TestEntry first = new TestEntry("item_001");
+
+            SetEntries(asset, new List<TestEntry>
+            {
+                first
+            });
+
+            IReadOnlyList<TestEntry> firstView = asset.Entries;
+
+            TestEntry second = new TestEntry("item_002");
+
+            SetEntries(asset, new List<TestEntry>
+            {
+                second
+            });
+
+            IReadOnlyList<TestEntry> secondView = asset.Entries;
+
+            Assert.That(firstView.Count, Is.EqualTo(1));
+            Assert.That(firstView[0], Is.SameAs(first));
+
+            Assert.That(secondView.Count, Is.EqualTo(1));
+            Assert.That(secondView[0], Is.SameAs(second));
+        }
+
+        [Test]
+        public void Build_ValidEntries_CreatesSnapshotIndependentFromLaterAssetChanges()
+        {
+            TestDataTableAsset asset = CreateAsset();
+
+            TestEntry first = new TestEntry("item_001");
+
+            SetEntries(asset, new List<TestEntry>
+            {
+                first
+            });
+
+            Result<DataTable<TestEntry>> result = asset.Build();
+
+            Assert.That(result.IsSuccess, Is.True);
+
+            TestEntry second = new TestEntry("item_002");
+
+            SetEntries(asset, new List<TestEntry>
+            {
+                second
+            });
+
+            Assert.That(asset.Count, Is.EqualTo(1));
+            Assert.That(asset.Entries[0], Is.SameAs(second));
+
+            Assert.That(result.Value.Count, Is.EqualTo(1));
+            Assert.That(result.Value.Entries[0], Is.SameAs(first));
+            Assert.That(result.Value.Contains("item_001"), Is.True);
+            Assert.That(result.Value.Contains("item_002"), Is.False);
+        }
+
+        [Test]
+        public void Build_InvalidEntriesReplacedWithValidEntries_Succeeds()
+        {
+            TestDataTableAsset asset = CreateAsset();
+
+            SetEntries(asset, new List<TestEntry>
+            {
+                new TestEntry("item_001"),
+                new TestEntry("item_001")
+            });
+
+            Result<DataTable<TestEntry>> invalidResult = asset.Build();
+
+            Assert.That(invalidResult.IsFailure, Is.True);
+            Assert.That(invalidResult.Error.Code, Is.EqualTo(DataErrorCodes.ValidationFailed));
+
+            SetEntries(asset, new List<TestEntry>
+            {
+                new TestEntry("item_001"),
+                new TestEntry("item_002")
+            });
+
+            Result<DataTable<TestEntry>> validResult = asset.Build();
+
+            Assert.That(validResult.IsSuccess, Is.True);
+            Assert.That(validResult.Value.Count, Is.EqualTo(2));
+            Assert.That(validResult.Value.Contains("item_001"), Is.True);
+            Assert.That(validResult.Value.Contains("item_002"), Is.True);
+        }
+
+        [Test]
+        public void Build_ValidEntriesReplacedWithInvalidEntries_ReturnsValidationFailed()
+        {
+            TestDataTableAsset asset = CreateAsset();
+
+            SetEntries(asset, new List<TestEntry>
+            {
+                new TestEntry("item_001"),
+                new TestEntry("item_002")
+            });
+
+            Result<DataTable<TestEntry>> validResult = asset.Build();
+
+            Assert.That(validResult.IsSuccess, Is.True);
+
+            SetEntries(asset, new List<TestEntry>
+            {
+                new TestEntry("item_001"),
+                new TestEntry("item_001")
+            });
+
+            Result<DataTable<TestEntry>> invalidResult = asset.Build();
+
+            Assert.That(invalidResult.IsFailure, Is.True);
+            Assert.That(invalidResult.Error.Code, Is.EqualTo(DataErrorCodes.ValidationFailed));
+        }
     }
 }
