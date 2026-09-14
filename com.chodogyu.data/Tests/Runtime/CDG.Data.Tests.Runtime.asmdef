@@ -1,0 +1,21 @@
+{
+  "name": "CDG.Data.Tests.Runtime",
+  "rootNamespace": "CDG.Data.Tests.Runtime",
+  "references": [
+    "CDG.Data"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

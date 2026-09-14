@@ -1,0 +1,16 @@
+{
+  "name": "CDG.Data",
+  "rootNamespace": "CDG.Data",
+  "references": [
+    "CDG.Core"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
