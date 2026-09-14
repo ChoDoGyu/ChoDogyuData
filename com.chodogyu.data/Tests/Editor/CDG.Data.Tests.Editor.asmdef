@@ -3,7 +3,8 @@
   "rootNamespace": "CDG.Data.Tests.Editor",
   "references": [
     "CDG.Data",
-    "CDG.Data.Editor"
+    "CDG.Data.Editor",
+    "CDG.Core"
   ],
   "includePlatforms": [
     "Editor"

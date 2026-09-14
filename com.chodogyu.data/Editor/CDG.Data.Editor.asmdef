@@ -2,7 +2,8 @@
   "name": "CDG.Data.Editor",
   "rootNamespace": "CDG.Data.Editor",
   "references": [
-    "CDG.Data"
+    "CDG.Data",
+    "CDG.Core"
   ],
   "includePlatforms": [
     "Editor"
