@@ -1,0 +1,20 @@
+[
+  {
+    "id": "staff_wood",
+    "displayName": "Wood Staff",
+    "power": 12,
+    "rarity": 0
+  },
+  {
+    "id": "staff_arcane",
+    "displayName": "Arcane Staff",
+    "power": 35,
+    "rarity": 1
+  },
+  {
+    "id": "staff_ancient",
+    "displayName": "Ancient Staff",
+    "power": 70,
+    "rarity": 2
+  }
+]

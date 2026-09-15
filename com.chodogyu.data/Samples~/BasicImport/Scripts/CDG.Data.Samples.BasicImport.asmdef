@@ -1,0 +1,17 @@
+{
+  "name": "CDG.Data.Samples.BasicImport",
+  "rootNamespace": "CDG.Data.Samples.BasicImport",
+  "references": [
+    "CDG.Data",
+    "CDG.Core"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

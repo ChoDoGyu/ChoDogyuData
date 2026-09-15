@@ -13,5 +13,12 @@
   ],
   "author": {
     "name": "ChoDogyu"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "Basic Import",
+      "description": "DataTableAsset 정의와 CSV/JSON Preview, Diff 및 Apply 흐름을 확인할 수 있는 기본 Sample입니다.",
+      "path": "Samples~/BasicImport"
+    }
+  ]
 }
