@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CDG.Core.Results;
 using CDG.Data;
 using CDG.Data.Editor.Importing;
@@ -181,7 +182,7 @@ namespace CDG.Data.Tests.Editor
                 DataImportProcessor.Import<TestEntry>(
                     "source",
                     importer,
-                    null,
+                    (IReadOnlyList<TestEntry>)null,
                     comparer));
         }
 

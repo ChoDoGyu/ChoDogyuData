@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CDG.Core.Results;
@@ -70,6 +71,40 @@ namespace CDG.Data
             }
 
             return DataTable<T>.Create(entries);
+        }
+
+        /// <summary>
+        /// 현재 직렬화된 데이터 전체를 지정한 데이터로 교체합니다.
+        /// 새 데이터는 먼저 독립된 스냅샷으로 생성하고 검증하며,
+        /// 검증에 실패하면 기존 Asset 데이터는 변경하지 않습니다.
+        /// </summary>
+        /// <param name="source">Asset에 새로 저장할 데이터 항목입니다.</param>
+        /// <returns>교체 성공 여부 또는 검증 실패 정보를 포함하는 결과입니다.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="source"/>가 null인 경우 발생합니다.
+        /// </exception>
+        internal Result ReplaceEntries(IEnumerable<T> source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            List<T> snapshot = new List<T>(source);
+            DataValidationReport report = DataTableValidator.Validate(snapshot);
+
+            if (!report.IsValid)
+            {
+                return Result.Failure(new ResultError(
+                    DataErrorCodes.ValidationFailed,
+                    $"데이터 테이블 Asset 교체 데이터 검증에 실패했습니다. 발견된 문제 수: {report.Count}"));
+            }
+
+            entries = snapshot;
+            readOnlyEntriesSource = null;
+            readOnlyEntries = null;
+
+            return Result.Success();
         }
     }
 }
