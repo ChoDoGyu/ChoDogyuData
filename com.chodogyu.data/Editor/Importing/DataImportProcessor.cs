@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CDG.Core.Results;
 using CDG.Data;
 using CDG.Data.Validation;
@@ -6,7 +7,8 @@ using CDG.Data.Validation;
 namespace CDG.Data.Editor.Importing
 {
     /// <summary>
-    /// 외부 문자열 입력부터 파싱된 후보 데이터의 검증까지 이어지는 공통 가져오기 흐름을 처리합니다.
+    /// 외부 문자열 입력부터 파싱된 후보 데이터의 검증과 현재 데이터와의 Diff 계산까지 이어지는
+    /// 공통 가져오기 흐름을 처리합니다.
     /// 실제 대상 Asset의 데이터는 수정하지 않습니다.
     /// </summary>
     internal static class DataImportProcessor
@@ -50,6 +52,57 @@ namespace CDG.Data.Editor.Importing
             DataImportPreview<T> preview = new DataImportPreview<T>(candidate, validationReport);
 
             return Result<DataImportPreview<T>>.Success(preview);
+        }
+
+        /// <summary>
+        /// 외부 데이터를 가져오고 검증한 뒤 현재 데이터와 비교하여 Diff가 포함된 미리보기를 생성합니다.
+        /// 후보 데이터가 유효하지 않은 경우 검증 결과는 보존하지만 Diff는 계산하지 않습니다.
+        /// </summary>
+        internal static Result<DataImportPreview<T>> Import<T>(string text, IDataTextImporter<T> importer, IReadOnlyList<T> currentEntries, IDataImportEntryComparer<T> comparer) where T : IDataEntry
+        {
+            if (importer == null)
+            {
+                throw new ArgumentNullException(nameof(importer));
+            }
+
+            if (currentEntries == null)
+            {
+                throw new ArgumentNullException(nameof(currentEntries));
+            }
+
+            if (comparer == null)
+            {
+                throw new ArgumentNullException(nameof(comparer));
+            }
+
+            Result<DataImportPreview<T>> importResult = Import(text, importer);
+
+            if (importResult.IsFailure)
+            {
+                return importResult;
+            }
+
+            DataImportPreview<T> preview = importResult.Value;
+
+            if (!preview.IsValid)
+            {
+                return importResult;
+            }
+
+            Result<DataImportDiff<T>> diffResult = DataImportDiffBuilder.Build(
+                currentEntries,
+                preview.Candidate,
+                comparer);
+
+            if (diffResult.IsFailure)
+            {
+                return Result<DataImportPreview<T>>.Failure(diffResult.Error);
+            }
+
+            return Result<DataImportPreview<T>>.Success(new DataImportPreview<T>(
+                preview.Candidate,
+                preview.ValidationReport,
+                diffResult.Value));
         }
     }
 }
