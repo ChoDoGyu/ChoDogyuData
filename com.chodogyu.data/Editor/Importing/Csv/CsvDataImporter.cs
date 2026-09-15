@@ -54,6 +54,18 @@ namespace CDG.Data.Editor.Importing
             }
 
             CsvHeader header = headerResult.Value;
+
+            if (rowMapper is ICsvHeaderValidator headerValidator)
+            {
+                Result headerValidationResult = headerValidator.ValidateHeader(header);
+
+                if (headerValidationResult.IsFailure)
+                {
+                    return Result<DataImportCandidate<T>>.Failure(
+                        headerValidationResult.Error);
+                }
+            }
+
             List<T> entries = new List<T>(document.Count - 1);
 
             for (int index = 1; index < document.Count; index++)
@@ -83,7 +95,8 @@ namespace CDG.Data.Editor.Importing
                 entries.Add(mapResult.Value);
             }
 
-            return Result<DataImportCandidate<T>>.Success(new DataImportCandidate<T>(entries));
+            return Result<DataImportCandidate<T>>.Success(
+                new DataImportCandidate<T>(entries));
         }
 
         private static Result<DataImportCandidate<T>> CreateFailure(string message)
